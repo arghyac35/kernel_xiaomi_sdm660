@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -842,6 +842,7 @@ static int msm_pcm_playback_close(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_soc_pcm_runtime *soc_prtd = substream->private_data;
 	struct msm_audio *prtd = runtime->private_data;
+	struct msm_plat_data *pdata;
 	uint32_t timeout;
 	struct msm_plat_data *pdata = NULL;
 	int dir = 0;
@@ -1186,6 +1187,7 @@ static int msm_pcm_adsp_stream_cmd_put(struct snd_kcontrol *kcontrol,
 		goto done;
 	}
 
+	mutex_lock(&pdata->lock);
 	event_data = (struct msm_adsp_event_data *)ucontrol->value.bytes.data;
 	if ((event_data->event_type < ADSP_STREAM_PP_EVENT) ||
 	    (event_data->event_type >= ADSP_STREAM_EVENT_MAX)) {
@@ -2321,6 +2323,7 @@ static int msm_pcm_channel_mixer_cfg_ctl_put(struct snd_kcontrol *kcontrol,
 	}
 	mutex_unlock(&pdata->lock);
 done:
+	mutex_unlock(&pdata->lock);
 	return ret;
 }
 
